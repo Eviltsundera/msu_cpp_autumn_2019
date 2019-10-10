@@ -27,6 +27,7 @@ private:
 int main()
 {
     int rows, columns;
+    std::cout << "input size\n";
     std::cin >> rows >> columns;
     int **matrix = new int *[rows];
     for (int i = 0; i < rows; i++) {
