@@ -13,7 +13,7 @@ run:
     ./sum_by_rows
 
 test:
-    pwd
+    -.-
 
 clean:
     rm -rf *.o
