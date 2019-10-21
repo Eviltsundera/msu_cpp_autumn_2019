@@ -1,30 +1,33 @@
 #include <iostream>
 #include <string>
 
-int parse_sum();
-int parse_product();
-int parse_factor();
-bool check_char();
-bool check_digit();
-char *x;
+int parse_sum(char *&x, int& err);
+int parse_product(char *&x, int& err);
+int parse_factor(char *&x, int& err);
+bool check_char(char *&x);
+bool check_digit(char *&x);
 
-#define MAX_LENGHT 10000
 
-bool check_char() {
+const int  MAX_LENGHT =  10000;
+
+bool check_char(char *&x) {
     if (*x >= '0' && *x <= '9') return false;
     if (*x == '-' || *x == '+' || *x == '*' || *x == '/') return false;
     return *x != '\0';
 }
 
-bool check_digit() {
+bool check_digit(char *&x) {
     return !(*x >= '0' && *x <= '9');
 }
-int parse_sum() {
-    int pro1 = parse_product();
+int parse_sum(char *&x, int& err) {
+    if (err != 0) {
+        return 0;
+    }
+    int pro1 = parse_product(x,err);
     while(*x == '+' || *x == '-') {
         char op = *x;
         x++;
-        int pro2 = parse_product();
+        int pro2 = parse_product(x, err);
         if (op == '+') {
             pro1 += pro2;
         } else {
@@ -34,18 +37,22 @@ int parse_sum() {
     return pro1;
 }
 
-int parse_product() {
-    int fac1 = parse_factor();
+int parse_product(char *&x, int& err) {
+    if (err != 0) {
+        return 0;
+    }
+    int fac1 = parse_factor(x, err);
     while(*x == '*' || *x == '/') {
         char op = *x;
         x++;
-        int fac2 = parse_factor();
+        int fac2 = parse_factor(x, err);
         if (op == '*') {
             fac1 *= fac2;
         } else {
             if (!fac2) {
-                std::cout << "DIVISION BY ZERO\n";
-                exit(1);
+                err = 2;
+                return 0;
+                
             }
             fac1 /= fac2;
         }
@@ -53,16 +60,19 @@ int parse_product() {
     return fac1;
 }
 
-int parse_factor() {
+int parse_factor(char *&x, int& err) {
+    if (err != 0) {
+        return 0;
+    }
     bool sign = 0;
     if (*x == '-') {
         sign = 1;
         x++;
     }
 
-    if (check_digit()) {
-        std::cout << "BAD EXPRESSION\n";
-        exit(1);
+    if (check_digit(x)) {
+        err = 1;
+        return 0;
     }
 
     int result = 0;
@@ -72,23 +82,16 @@ int parse_factor() {
         x++;
     }
 
-    if (check_char()) {
-        std::cout << "BAD EXPRESSION\n";
-        exit(1);
+    if (check_char(x)) {
+        err = 1;
+        return 0;
     }
     if (sign) result *= -1;
     return result;
 }
 
-
-int main(int argc, const char *argv[]) {
-    //std::cout << "Enter your expresion\n";
-    if (argc < 2) {
-        return 1;
-    }
-    std::string tmp_expr = argv[1];
-    //getline(argv[1], tmp_expr);
-
+int calc(std::string tmp_expr, int& err) {
+    char *x;
     char expr[MAX_LENGHT];
     x = expr;
     for (unsigned long i = 0; i < tmp_expr.length(); i++) {
@@ -96,14 +99,39 @@ int main(int argc, const char *argv[]) {
             continue;
         if (tmp_expr[i] >= '0' && tmp_expr[i] <= '9' && i >= 2 &&
                 (tmp_expr[i - 1] == ' ' || tmp_expr[i - 1] == '\t') && (tmp_expr[i - 2] >= '0' && tmp_expr[i - 2] <= '9')) {
-            std::cout << "BAD EXPRESSION\n";
-            exit(1);
+            err = 1;
+            return 0;
         }
         *x = tmp_expr[i];
         x++;
     }
     *x = '\0';
     x = expr;
-    std::cout << parse_sum() << "\n";
+
+    int ans = parse_sum(x, err);
+    return ans;
+}
+
+int main(int argc, const char *argv[]) {
+    //std::cout << "Enter your expresion\n";
+    if (argc < 2) {
+        return 1;
+    }
+    std::string tmp_expr = argv[1];
+    int err = 0;
+    //getline(argv[1], tmp_expr);
+
+    int ans = calc(tmp_expr, err);
+    if (err == 1) {
+        std::cout << "BAD EXPRESSION\n";
+        return 1;
+    }
+    if (err == 2) {
+        std::cout << "DIVISION BY ZERO\n";
+        return 1;
+    }
+
+
+    std::cout << ans << '\n';
     return 0;
 }
