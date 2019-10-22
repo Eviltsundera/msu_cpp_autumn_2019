@@ -10,6 +10,12 @@ bool check_digit(char *&x);
 
 const int  MAX_LENGHT =  10000;
 
+enum
+{
+    err_bad_expr = 1,
+    err_zero_div = 2
+};
+
 bool check_char(char *&x) {
     if (*x >= '0' && *x <= '9') return false;
     if (*x == '-' || *x == '+' || *x == '*' || *x == '/') return false;
@@ -50,7 +56,7 @@ int parse_product(char *&x, int& err) {
             fac1 *= fac2;
         } else {
             if (!fac2) {
-                err = 2;
+                err = err_zero_div;
                 return 0;
                 
             }
@@ -71,7 +77,7 @@ int parse_factor(char *&x, int& err) {
     }
 
     if (check_digit(x)) {
-        err = 1;
+        err = err_bad_expr;
         return 0;
     }
 
@@ -83,14 +89,14 @@ int parse_factor(char *&x, int& err) {
     }
 
     if (check_char(x)) {
-        err = 1;
+        err = err_bad_expr;
         return 0;
     }
     if (sign) result *= -1;
     return result;
 }
 
-int calc(std::string tmp_expr, int& err) {
+int calc(std::string& tmp_expr, int& err) {
     char *x;
     char expr[MAX_LENGHT];
     x = expr;
@@ -99,7 +105,7 @@ int calc(std::string tmp_expr, int& err) {
             continue;
         if (tmp_expr[i] >= '0' && tmp_expr[i] <= '9' && i >= 2 &&
                 (tmp_expr[i - 1] == ' ' || tmp_expr[i - 1] == '\t') && (tmp_expr[i - 2] >= '0' && tmp_expr[i - 2] <= '9')) {
-            err = 1;
+            err = err_bad_expr;
             return 0;
         }
         *x = tmp_expr[i];
@@ -122,11 +128,11 @@ int main(int argc, const char *argv[]) {
     //getline(argv[1], tmp_expr);
 
     int ans = calc(tmp_expr, err);
-    if (err == 1) {
+    if (err == err_bad_expr) {
         std::cout << "BAD EXPRESSION\n";
         return 1;
     }
-    if (err == 2) {
+    if (err == err_zero_div) {
         std::cout << "DIVISION BY ZERO\n";
         return 1;
     }
