@@ -7,9 +7,6 @@ int parse_factor(char *&x, int& err);
 bool check_char(char *&x);
 bool check_digit(char *&x);
 
-
-const int  MAX_LENGHT =  10000;
-
 enum
 {
     err_bad_expr = 1,
@@ -17,12 +14,18 @@ enum
 };
 
 bool check_char(char *&x) {
+    while(isspace(*x)) {
+        x++;
+    }
     if (*x >= '0' && *x <= '9') return false;
     if (*x == '-' || *x == '+' || *x == '*' || *x == '/') return false;
     return *x != '\0';
 }
 
 bool check_digit(char *&x) {
+    while(isspace(*x)) {
+        x++;
+    }
     return !(*x >= '0' && *x <= '9');
 }
 int parse_sum(char *&x, int& err) {
@@ -31,6 +34,9 @@ int parse_sum(char *&x, int& err) {
     }
     int pro1 = parse_product(x,err);
     while(*x == '+' || *x == '-') {
+        while(isspace(*x)) {
+            x++;
+        }
         char op = *x;
         x++;
         int pro2 = parse_product(x, err);
@@ -48,7 +54,13 @@ int parse_product(char *&x, int& err) {
         return 0;
     }
     int fac1 = parse_factor(x, err);
+    while(isspace(*x)) {
+        x++;
+    }
     while(*x == '*' || *x == '/') {
+        while(isspace(*x)) {
+            x++;
+        }
         char op = *x;
         x++;
         int fac2 = parse_factor(x, err);
@@ -67,6 +79,9 @@ int parse_product(char *&x, int& err) {
 }
 
 int parse_factor(char *&x, int& err) {
+    while(isspace(*x)) {
+        x++;
+    }
     if (err != 0) {
         return 0;
     }
@@ -96,11 +111,9 @@ int parse_factor(char *&x, int& err) {
     return result;
 }
 
-int calc(std::string& tmp_expr, int& err) {
-    char *x;
-    char expr[MAX_LENGHT];
-    x = expr;
-    for (unsigned long i = 0; i < tmp_expr.length(); i++) {
+int calc(char *tmp_expr, int& err) {
+    char *x = tmp_expr;
+    for (unsigned long i = 0; i < strlen(tmp_expr); i++) {
         if (tmp_expr[i] == ' ' || tmp_expr[i] == '\t')
             continue;
         if (tmp_expr[i] >= '0' && tmp_expr[i] <= '9' && i >= 2 &&
@@ -108,22 +121,21 @@ int calc(std::string& tmp_expr, int& err) {
             err = err_bad_expr;
             return 0;
         }
-        *x = tmp_expr[i];
-        x++;
     }
-    *x = '\0';
-    x = expr;
 
+    if (err) {
+        return 0;
+    }
     int ans = parse_sum(x, err);
     return ans;
 }
 
-int main(int argc, const char *argv[]) {
+int main(int argc, char *argv[]) {
     //std::cout << "Enter your expresion\n";
     if (argc < 2) {
         return 1;
     }
-    std::string tmp_expr = argv[1];
+    char *tmp_expr = argv[1];
     int err = 0;
     //getline(argv[1], tmp_expr);
 
