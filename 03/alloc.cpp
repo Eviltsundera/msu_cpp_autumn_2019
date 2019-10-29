@@ -2,16 +2,12 @@
 #include <cstdio>
 #include <iostream>
 
-#define  ll long long 
 
 class LinearAllocator
 {
 public:
     LinearAllocator(size_t maxSize) {
-        if (maxSize < 0) {
-            std::cout << "Unexpected argument\n";
-            buf =  nullptr;
-        } else if (!maxSize) {
+     if (!maxSize) {
             buf = nullptr;
         } else {
             buf = (char*)malloc(maxSize * sizeof(char));
@@ -24,9 +20,6 @@ public:
     char *alloc(size_t size) {
         char *res;
         if (!buf || offset + size > totalSize) {
-            std::cout << "Failed to allocate memory: ";
-            if (!buf) std::cout << "your block does not exist\n";
-            else std::cout << "out of limit\n";
             return nullptr;
         }
 
@@ -46,26 +39,30 @@ public:
     }
 private:
     char *buf;
-    unsigned ll offset;
-    unsigned ll totalSize;
+    unsigned long long  offset;
+    unsigned long long  totalSize;
 };
 
 int main(int argc, char *argv[]) {
-    int i = 1;
-    int n;
-    std::sscanf(argv[i], "%d", &n);
-    i++;
-    LinearAllocator allocator(n);
+    int size;
+    sscanf(argv[1], "%d", &size);
+    LinearAllocator allocator(size);
+
+    int i = 2;
     while(i < argc) {
-        char *op = argv[i];
+        std::string op = argv[i];
         i++;
-        if (!strcmp(op, "alloc")) {
-            int m;
-            std::sscanf(argv[i], "%d", &m);
-            allocator.alloc(m);
+
+        if (op == "alloc") {
+            int n;
+            sscanf(argv[i], "%d", &n);
+            i++;
+            if (!allocator.alloc(n)) {
+                std::cout << "Failed to allocate memory\n";
+            }
         }
 
-        if (!strcmp(op, "reset")) {
+        if (op == "reset") {
             allocator.reset();
         }
     }

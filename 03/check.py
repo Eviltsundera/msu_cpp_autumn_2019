@@ -9,4 +9,4 @@ def check(expr, result):
     else:
         print('ok: {0} = {1}'.format(expr, result))
 
-check(['0', 'alloc', '5'], 'Failed to allocate memory: your block does not exist\n')
+check(['0', 'alloc', '5'], 'Failed to allocate memory\n')
