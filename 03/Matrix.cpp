@@ -6,21 +6,21 @@ public:
     Row (int *p, int columns) : len(columns) {
         ptr = p;
     }
-///////////////
+
     const int& operator[](size_t i) const {
         if (i >= len) {
             throw out_of_range("Matrix doesn't have as many rows");
         }
         return ptr[i];
     }
-///////////////
+
     int &operator[](size_t i) {
         if (i >= len) {
             throw out_of_range("Matrix doesn't have as many rows");
         }
         return ptr[i];
     }
-///////////////
+
 private:
     int *ptr;
     const int len;
@@ -29,7 +29,7 @@ private:
 
 class Matrix{
 public:
-    const pair<int, int> shape;
+    //const pair<int, int> shape;
     Matrix (int n, int m) : shape(n , m), size(n * m) {
         ptr = (int*)malloc(n * m * sizeof(int));
         rows = (int**)malloc(n * sizeof(*rows));
@@ -37,35 +37,36 @@ public:
             rows[i] = ptr + i * m;
         }
     }
-///////////////
-    size_t getrows() {
+
+    size_t getrows() const {
         return shape.first;
     }
-///////////////
-    size_t getcolumns() {
+
+    size_t getcolumns() const  {
         return shape.second;
     }
-///////////////
-    void operator=(int val) {
+
+    Matrix& operator=(int val) {
         for (size_t i = 0; i < size; i++) {
             ptr[i] = val;
         }
+        return *this;
     }
-///////////////
+
     const Row& operator[](size_t i) const {
         if (i >= shape.first) {
             throw out_of_range("Matrix doesn't have as many rows");
         }
         return Row(rows[i], shape.second);
     }
-///////////////
+
     Row operator[](size_t i) {
         if (i >= shape.first) {
             throw out_of_range("Matrix doesn't have as many rows");
         }
         return Row(rows[i], shape.second);
     }
-///////////////
+
     bool operator==(const Matrix &jopa) {
         if (shape != jopa.shape) {
             return false;
@@ -76,32 +77,34 @@ public:
         }
         return true;
     }
-///////////////
+
     bool operator!=(const Matrix &jopa) {
         return !(operator==(jopa));
     }
-///////////////
-    void operator*=(int val) {
+
+    Matrix& operator*=(int val) {
         for (size_t i = 0; i < size; ++i) {
             ptr[i] *= val;
         }
+        return *this;
     }
-///////////////
+
     ~Matrix() {
         free(ptr);
         free(rows);
     }
-///////////////
+
 
 private:
     const int size;
+    const pair<int, int> shape;
     int *ptr, **rows;
 };
 
-ostream& operator<<(ostream& out, const Matrix &jopa) {
-    for (int i = 0 ; i < jopa.shape.first; i++) {
-        for (int j = 0; j < jopa.shape.second; j++) {
-            out << jopa[i][j] << " ";
+ostream& operator<<(ostream& out, const Matrix &mtr) {
+    for (size_t i = 0 ; i < mtr.getrows(); i++) {
+        for (size_t j = 0; j < mtr.getcolumns(); j++) {
+            out << mtr[i][j] << " ";
         }
         out << "\n";
     }
