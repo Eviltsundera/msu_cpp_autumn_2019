@@ -67,19 +67,19 @@ public:
         return Row(rows[i], shape.second);
     }
 
-    bool operator==(const Matrix &jopa) {
-        if (shape != jopa.shape) {
+    bool operator==(const Matrix &j) {
+        if (shape != j.shape) {
             return false;
         }
         for (size_t i = 0; i < size; i++) {
-            if (ptr[i] != jopa.ptr[i])
+            if (ptr[i] != j.ptr[i])
                 return false;
         }
         return true;
     }
 
-    bool operator!=(const Matrix &jopa) {
-        return !(operator==(jopa));
+    bool operator!=(const Matrix &j) {
+        return !(operator==(j));
     }
 
     Matrix& operator*=(int val) {
