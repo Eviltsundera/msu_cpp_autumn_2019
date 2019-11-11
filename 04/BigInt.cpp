@@ -238,7 +238,7 @@ public:
         }
 
         if (!ar_size) {
-            free(digit_array);
+            digit_array = (int*)realloc(digit_array, ar_size * sizeof(int));
             is_negative = false;
         } else {
             digit_array = (int*)realloc(digit_array, ar_size * sizeof(int));
