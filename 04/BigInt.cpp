@@ -46,20 +46,32 @@ public:
         } else {
             if (str[0] == '-') {
                 is_negative = true;
-                str = str.substr(1);
             }
             else is_negative = false;
 
-            ar_size = static_cast<int>(str.length() / 9) + 1;
+            if (!is_negative) {
+                ar_size = static_cast<int>(str.length() / 9) + 1;
+            } else ar_size = static_cast<int>(str.length() - 1) / 9 + 1;
+            
             digit_array = (int*)malloc(ar_size * sizeof(int));
             int counter = 0;
             for (int i = str.length(); i > 0; i -= 9) {
-                if (i < 9) {
+                if (!is_negative) {
+                    if (i < 9) {
                     digit_array[counter] = atoi(str.substr(0, i).c_str());
                     counter++;
+                    } else {
+                        digit_array[counter] = atoi(str.substr(i - 9, 9).c_str());
+                        counter++;
+                    }
                 } else {
-                    digit_array[counter] = atoi(str.substr(i - 9, 9).c_str());
-                    counter++;
+                    if (i < 10) {
+                        digit_array[counter] = atoi(str.substr(1, i).c_str());
+                        counter++;
+                    } else {
+                        digit_array[counter] = atoi(str.substr(i - 9, 9).c_str());
+                        counter++;
+                    }
                 }
             }
         }
@@ -147,7 +159,7 @@ public:
         return operator=(tmp);
     }
 
-    BigInt& operator=(std::string str) {
+    BigInt& operator=(std::string& str) {
         BigInt tmp = BigInt(str);
         return operator=(tmp);
     }
@@ -158,11 +170,11 @@ public:
     /////////////////////////
     //ariphmetic operators//
 
-    BigInt& operator-() const {
-        static BigInt tmp;
-        tmp = *this;
-        tmp.is_negative = !tmp.is_negative;
-        return tmp;
+    BigInt operator-() const {
+        //BigInt copy;
+        BigInt res = *this;
+        res.is_negative = !res.is_negative;
+        return res;
     }
 
     BigInt operator+(const BigInt& other) const {
@@ -173,7 +185,7 @@ public:
         else if (other.is_negative) return *this - (-other);
 
         int carry = 0;
-        static BigInt tmp;
+        BigInt tmp;
         tmp = *this;
 
         if (other.ar_size > ar_size) {
@@ -203,7 +215,7 @@ public:
         else if ((*this) < other) return -(other - *this);
 
         int carry = 0;
-        static BigInt tmp;
+        BigInt tmp;
         tmp = *this;
 
         for (int i = 0; i < other.ar_size || carry != 0; i++) {
@@ -255,15 +267,21 @@ std::ostream& operator<<(std::ostream& os, const BigInt &n) {
 
 int main()
 {
-    std::string str = "1234567a900";
-    BigInt n = 999999999;
-    int tmp;
-    std::cin >> tmp;
-    n = tmp;
+    std::string str = "1234567900000000000000000000000";
+    BigInt n = 2000000000;
     BigInt m = str;
-    m = "1000000000";
-    //std::cout << n.ar_size;
-    //m = (n + m);
-    std::cout << (n - m);
+    std::cout << m << " + " << n << " = " << (m + n) << "\n";
+    std::cout << m << " - " << n << " = " << (m - n) << "\n";
+    std::cout << n << " - " << m << " = " << (n - m) << "\n";
+
+    BigInt tmp = 75;
+    BigInt a = tmp;
+    BigInt b = -tmp;
+    std::cout << tmp << " " << a << " " << b << "\n";
+    b = a;
+    std::cout << tmp << " " << a << " " << b << "\n";
+    str = "1234567900000000000000000780000";
+    n = str;
+    std::cout << n - m;
     return 0;
 }
