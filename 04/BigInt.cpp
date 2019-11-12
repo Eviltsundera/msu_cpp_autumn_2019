@@ -39,7 +39,7 @@ public:
         }
     }
 
-    BigInt(std::string& str) { // string constructor
+    BigInt(const std::string& str) { // string constructor
         if (!str.length()) {
             is_negative = false;
             ar_size = 0;
@@ -159,7 +159,7 @@ public:
         return operator=(tmp);
     }
 
-    BigInt& operator=(std::string& str) {
+    BigInt& operator=(const std::string& str) {
         BigInt tmp = BigInt(str);
         return operator=(tmp);
     }
@@ -215,7 +215,7 @@ public:
         else if ((*this) < other) return -(other - *this);
 
         int carry = 0;
-        BigInt tmp;
+        static BigInt tmp;
         tmp = *this;
 
         for (int i = 0; i < other.ar_size || carry != 0; i++) {
@@ -282,6 +282,17 @@ int main()
     std::cout << tmp << " " << a << " " << b << "\n";
     str = "1234567900000000000000000780000";
     n = str;
-    std::cout << n - m;
+    std::cout << n - m << "\n\n\n\n";
+
+    a = "12345678999";
+    b = "23456789999";
+    std::cout << a << " + " << b << " = " << a + b << "\n";
+    std::cout << -a << " + " << b << " = " << -a + b << "\n";
+    std::cout << a << " + " << -b << " = " << a + (-b) << "\n";
+    std::cout << -a << " + " << -b << " = " << -a + (-b) << "\n";
+    std::cout << a << " - " << b << " = " << a - b << "\n";
+    std::cout << -a << " - " << b << " = " << -a - b << "\n";
+    std::cout << a << " - " << -b << " = " << a - (-b) << "\n";
+    std::cout << -a << " - " << -b << " = " << -a - (-b) << "\n";
     return 0;
 }
