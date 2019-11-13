@@ -172,7 +172,7 @@ public:
 
     BigInt operator-() const {
         //BigInt copy;
-        BigInt res = *this;
+        BigInt res(*this);
         res.is_negative = !res.is_negative;
         return res;
     }
