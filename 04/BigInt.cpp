@@ -24,18 +24,71 @@ public:
         ar_size = 0;
     }
 
-    BigInt(int num) { // constructor from integer value
+    BigInt (int num) { //constructor form integer value
         is_negative = (num < 0);
-        int tmp = is_negative ? -num : num;
-        if (tmp < BASE) {
-            digit_array = (int*)malloc(sizeof(int));
-            digit_array[0] = tmp;
-            ar_size = 1;
-        } else {
-            digit_array = (int*)malloc(2 * sizeof(int));
-            digit_array[0] = tmp % BASE;
-            digit_array[1] = tmp / BASE;
-            ar_size = 2;
+        num = is_negative ? -num : num;
+        ar_size = 0;
+        digit_array = nullptr;
+        while(num > 0) {
+            ar_size++;
+            if (digit_array) {
+                digit_array = (int*)realloc(digit_array, (ar_size + 1) * sizeof(int));
+            } else {
+                digit_array = (int*)malloc(ar_size * sizeof(int));   
+            }
+            digit_array[ar_size - 1] = num % BASE;
+            num /= BASE;
+        }
+    }
+
+    BigInt (unsigned int num) {
+        is_negative = (num < 0);
+        num = is_negative ? -num : num;
+        ar_size = 0;
+        digit_array = nullptr;
+        while(num > 0) {
+            ar_size++;
+            if (digit_array) {
+                digit_array = (int*)realloc(digit_array, (ar_size + 1) * sizeof(int));
+            } else {
+                digit_array = (int*)malloc(ar_size * sizeof(int));   
+            }
+            digit_array[ar_size - 1] = num % BASE;
+            num /= BASE;
+        }
+    }
+
+    BigInt(long long int num) { //constructor from long long integer value
+        is_negative = (num < 0);
+        num = is_negative ? -num : num;
+        ar_size = 0;
+        digit_array = nullptr;
+        while(num > 0) {
+            ar_size++;
+            if (digit_array) {
+                digit_array = (int*)realloc(digit_array, (ar_size + 1) * sizeof(int));
+            } else {
+                digit_array = (int*)malloc(ar_size * sizeof(int));   
+            }
+            digit_array[ar_size - 1] = num % BASE;
+            num /= BASE;
+        }
+    }
+
+    BigInt(unsigned long long int num) {
+        is_negative = (num < 0);
+        num = is_negative ? -num : num;
+        ar_size = 0;
+        digit_array = nullptr;
+        while(num > 0) {
+            ar_size++;
+            if (digit_array) {
+                digit_array = (int*)realloc(digit_array, (ar_size + 1) * sizeof(int));
+            } else {
+                digit_array = (int*)malloc(ar_size * sizeof(int));   
+            }
+            digit_array[ar_size - 1] = num % BASE;
+            num /= BASE;
         }
     }
 
@@ -159,6 +212,21 @@ public:
         return operator=(tmp);
     }
 
+    BigInt& operator=(const unsigned int n) {
+        BigInt tmp = BigInt(n);
+        return operator=(tmp);
+    }
+
+    BigInt& operator=(const long long int n) {
+        BigInt tmp = BigInt(n);
+        return operator=(tmp);
+    }
+
+    BigInt& operator=(const unsigned long long int n) {
+        BigInt tmp = BigInt(n);
+        return operator=(tmp);
+    }
+
     BigInt& operator=(const std::string& str) {
         BigInt tmp = BigInt(str);
         return operator=(tmp);
@@ -215,7 +283,7 @@ public:
         else if ((*this) < other) return -(other - *this);
 
         int carry = 0;
-        static BigInt tmp;
+        BigInt tmp;
         tmp = *this;
 
         for (int i = 0; i < other.ar_size || carry != 0; i++) {
@@ -294,5 +362,8 @@ int main()
     std::cout << -a << " - " << b << " = " << -a - b << "\n";
     std::cout << a << " - " << -b << " = " << a - (-b) << "\n";
     std::cout << -a << " - " << -b << " = " << -a - (-b) << "\n";
+
+    a = -b;
+    std::cout << a << '\n' << -(-b) << '\n' << a - -b;
     return 0;
 }
