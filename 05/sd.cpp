@@ -78,7 +78,7 @@ public:
     Error operator()(ArgsT &&... args) {
         return process(args...);
     }
-
+private:
     template<class T, class... ArgsT>
     Error process(T &&val, ArgsT &&... args) {
         if (process(val) != Error::NoError)
@@ -105,11 +105,13 @@ public:
         if (text.empty())
             return Error::CorruptedArchive;
         val = 0;
-        for (auto i: text) {
-            if (!(i >= '0' && i <= '9')) {
+        for (char i: text) {
+            if (i < '0' || i > '9') {
                 return Error::CorruptedArchive;
             }
-            val = val * 10 + i - '0';
+            val *= 10;
+            val += i;
+            val -= '0';
         }
         return Error::NoError;
     }
