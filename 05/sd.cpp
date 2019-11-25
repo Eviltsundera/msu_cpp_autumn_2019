@@ -10,7 +10,7 @@ enum class Error
 
 class Serializer
 {
-    static constexpr char Separator = ' ';
+    static const  char Separator = ' ';
     std::ostream& out_;
 public:
     explicit Serializer(std::ostream& out)
@@ -27,7 +27,7 @@ public:
     template <class... ArgsT>
     Error operator()(ArgsT... args)
     {
-        return process(args...);
+        return process(std::forward<ArgsT>(args)...);
     }
 
 private:
@@ -61,7 +61,7 @@ private:
 class Deserializer
 {
     std::istream& in_;
-    static constexpr char Separator = ' ';
+    static const char Separator = ' ';
 public:
     explicit Deserializer(std::istream& in)
         :in_(in)
@@ -76,9 +76,9 @@ public:
 
     template<class... ArgsT>
     Error operator()(ArgsT &&... args) {
-        return process(args...);
+        return process(std::forward<ArgsT>(args)...);
     }
-private:
+
     template<class T, class... ArgsT>
     Error process(T &&val, ArgsT &&... args) {
         if (process(val) != Error::NoError)
@@ -105,13 +105,11 @@ private:
         if (text.empty())
             return Error::CorruptedArchive;
         val = 0;
-        for (char i: text) {
-            if (i < '0' || i > '9') {
+        for (auto i: text) {
+            if (!(i >= '0' && i <= '9')) {
                 return Error::CorruptedArchive;
             }
-            val *= 10;
-            val += i;
-            val -= '0';
+            val = val * 10 + i - '0';
         }
         return Error::NoError;
     }
@@ -132,13 +130,13 @@ struct Data
 
 int main()
 {
-    Data x { 1, true, 2 };
+    Data x = { 1, true, 2 };
 
     std::stringstream stream;
     std::string res;
     Serializer serializer(stream);
     serializer.save(x);
-    Data y { 0, false, 0 };
+    Data y = { 0, false, 0 };
 
     Deserializer deserializer(stream);
     const Error err = deserializer.load(y);
