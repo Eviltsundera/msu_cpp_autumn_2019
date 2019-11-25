@@ -4,13 +4,13 @@ CPPFLAGS+=-O2 -Wall -std=c++14 -fsanitize=undefined
 all: sd
 
 sd: sd.o
-    g++ $(CPPFLAGS) -o $@ $^
+	g++ $(CPPFLAGS) -o $@ $^
 
 sd.o: sd.cpp
-    g++ $(CPPFLAGS) -c $<
+	g++ $(CPPFLAGS) -c $<
 
 run:
-    ./sd
+	./sd
 
 clean:
-    rm -rf *.o
+	rm -rf *.o
