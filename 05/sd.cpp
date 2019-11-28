@@ -25,17 +25,17 @@ public:
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT... args)
+    Error operator()(ArgsT&&... args)
     {
         return process(std::forward<ArgsT>(args)...);
     }
 
 private:
-    void print(uint64_t n) {
+    void print(uint64_t& n) {
         out_ << n;
     }
 
-    void print(bool val) {
+    void print(bool& val) {
         if (val) out_ << "true";
         else out_ << "false";
     }
@@ -105,7 +105,7 @@ public:
         if (text.empty())
             return Error::CorruptedArchive;
         val = 0;
-        for (auto i: text) {
+        for (auto i : text) {
             if (!(i >= '0' && i <= '9')) {
                 return Error::CorruptedArchive;
             }
